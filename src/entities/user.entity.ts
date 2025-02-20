@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ProgramCenter } from './program-center.entity';
 
@@ -39,7 +40,11 @@ export class User {
   phone: string;
 
   @ManyToOne(() => ProgramCenter, { nullable: true })
-  programCenter: ProgramCenter;
+  @JoinColumn({ name: 'programCenterId' })
+  programCenter: ProgramCenter | null;
+
+  @Column({ nullable: true })
+  programCenterId: number | null;
 
   @CreateDateColumn()
   createdAt: Date;
