@@ -27,49 +27,61 @@ export class AttendanceService {
     date: string,
     status: AttendanceStatus,
     userId: number,
+    markedById: number,  // Add markedById parameter
   ): Promise<Attendance> {
     const volunteer = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['programCenter'],
     });
-
+  
     if (!volunteer) {
       throw new NotFoundException('Volunteer not found');
     }
-
+  
     if (!volunteer.programCenter) {
       throw new BadRequestException(
         'Volunteer is not assigned to any program center',
       );
     }
-
+  
     const programCenter = await this.programCenterRepository.findOne({
       where: { id: volunteer.programCenter.id },
     });
-
+  
     if (!programCenter) {
       throw new NotFoundException('Program center not found');
     }
-
+  
+    // Get the user who is marking attendance
+    const markedBy = await this.userRepository.findOne({
+      where: { id: markedById },
+    });
+  
+    if (!markedBy) {
+      throw new NotFoundException('User marking attendance not found');
+    }
+  
     const existingAttendance = await this.attendanceRepository.findOne({
       where: {
         volunteer: { id: userId },
         date: new Date(date),
       },
     });
-
+  
     if (existingAttendance) {
       existingAttendance.status = status;
+      existingAttendance.markedBy = markedBy;  
       return this.attendanceRepository.save(existingAttendance);
     }
-
+  
     const attendance = this.attendanceRepository.create({
       volunteer,
       programCenter,
       date: new Date(date),
       status,
+      markedBy, 
     });
-
+  
     return this.attendanceRepository.save(attendance);
   }
 
@@ -205,7 +217,7 @@ export class AttendanceService {
         volunteerName: record.volunteer.name,
         programCenter: record.programCenter.name,
         status: record.status.charAt(0).toUpperCase() + record.status.slice(1),
-        markedBy: record.markedBy.name,
+        markedBy: record.markedBy?.name || "Not Specified",
       });
     });
 

@@ -24,7 +24,8 @@ export class UsersService {
   async findAllVolunteers() {
     return this.userRepository.find({
       where: { role: UserRole.VOLUNTEER },
-      select: ['id', 'name', 'email'],
+      select: ['id', 'name', 'email', 'phone'],
+      relations: ['programCenter'],
       order: { name: 'ASC' },
     });
   }

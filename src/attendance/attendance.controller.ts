@@ -25,6 +25,7 @@ export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
   @Post('mark')
+  @UseGuards(JwtAuthGuard)
   async markAttendance(
     @Body() body: { date: string; status: AttendanceStatus },
     @Req() req,
@@ -32,7 +33,7 @@ export class AttendanceController {
     return this.attendanceService.markAttendance(
       body.date,
       body.status,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      req.user.id,
       req.user.id,
     );
   }
