@@ -9,9 +9,10 @@ export const databaseConfig: TypeOrmModuleOptions = {
   type: 'mysql',
   host: 'localhost',
   port: 3306,
-  username: 'root', // Change these credentials
-  password: '12345678', // Change these credentials
+  username: 'cohuser',
+  password: '12345678',
   database: 'coh_youth_erp',
   entities: [User, ProgramCenter, LibraryMaterial, Attendance],
-  synchronize: true, // Set to false in production
+  synchronize: true,
+  logging: true,
 };
